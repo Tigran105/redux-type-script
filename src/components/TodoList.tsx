@@ -1,11 +1,40 @@
-import React, {FC} from 'react';
+import React, {FC, useEffect} from 'react';
+import {useTypedSelector} from "../hooks/useTypedSelector";
+import {useActions} from "../hooks/useActions";
 
 const TodoList: FC = () => {
-    // TIKO tpelu paherna 33.18
-    //https://www.youtube.com/watch?v=ETWABFYv0GM 
+    const {todos, error, loading, limit, page} = useTypedSelector(state => state.todo)
+    const {fetchTodos,setTodoPage} = useActions()
+    const pages = [1, 2, 3, 4, 5]
+    useEffect(() => {
+        fetchTodos(page, limit)
+    }, [page])
+    if (loading) {
+        return <h1>Loading ...</h1>
+    }
+    if (error) {
+        return <h1>{error}</h1>
+    }
     return (
         <div>
-
+            {todos.map(todo => {
+                return <div key={todo.id}>
+                    {todo.id} - {todo.title}
+                </div>
+            })}
+            <div style={{display:"flex", cursor:"pointer"}}>
+                {pages.map(p => {
+                    return <div key={p}
+                                onClick={() => setTodoPage(p)}
+                                style={{
+                                    border: p === page ? "2px solid green" : "1px dashed gray",
+                                    padding: "10px"
+                                }}
+                    >
+                        {p}
+                    </div>
+                })}
+            </div>
         </div>
     );
 };
